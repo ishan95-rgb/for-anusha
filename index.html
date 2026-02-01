@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>For Anusha ❤️</title>
+    <style>
+        body { background: #fff0f3; display: flex; flex-direction: column; align-items: center; font-family: 'Segoe UI', sans-serif; height: 100vh; margin: 0; justify-content: center; overflow: hidden; touch-action: manipulation; }
+        h1 { color: #ff4d6d; margin: 10px 0; font-size: 24px; }
+        #game-container { position: relative; width: 100vw; max-width: 600px; height: 400px; background: #87CEEB; border: 5px solid #ffb3c1; border-radius: 15px; overflow: hidden; box-shadow: 0 10px 25px rgba(255, 77, 109, 0.3); }
+        canvas { display: block; width: 100%; height: 100%; }
+        
+        #overlay, #victory { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.9); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 100; text-align: center; padding: 20px; box-sizing: border-box; }
+        #victory { display: none; z-index: 200; }
+
+        .controls-hint { font-size: 14px; color: #590d22; margin-top: 5px; }
+        button { padding: 12px 30px; font-size: 18px; background: #ff4d6d; color: white; border: none; border-radius: 50px; cursor: pointer; font-weight: bold; }
+        
+        /* Mobile Touch Zones */
+        .touch-ctrl { position: absolute; bottom: 0; height: 150px; width: 50%; z-index: 50; opacity: 0.2; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; pointer-events: auto; }
+        #left-zone { left: 0; background: linear-gradient(to right, rgba(0,0,0,0.2), transparent); }
+        #right-zone { right: 0; background: linear-gradient(to left, rgba(0,0,0,0.2), transparent); }
+
+        .heart-bounce { animation: heartBeat 1s infinite alternate; color: #ff4d6d; font-size: 60px; }
+        @keyframes heartBeat { from { transform: scale(1); } to { transform: scale(1.2); } }
+    </style>
+</head>
+<body>
+
+    <h1>Super Anusha World</h1>
+
+    <div id="game-container">
+        <div id="overlay">
+            <h2 style="color: #c9184a;">A Quest for Anusha</h2>
+            <button id="start-btn">START GAME</button>
+            <p class="controls-hint">Desktop: Arrows to Move<br>Mobile: Tap Left/Right sides to Move & Jump</p>
+        </div>
+
+        <div id="left-zone" class="touch-ctrl">MOVE</div>
+        <div id="right-zone" class="touch-ctrl">JUMP</div>
+
+        <canvas id="gameCanvas" width="600" height="400"></canvas>
+
+        <div id="victory">
+            <div class="heart-bounce">❤️</div>
+            <h2 style="color: #c9184a;">Anusha!</h2>
+            <p style="font-size: 18px;">You won my heart.</p>
+            <h1 style="color: #ff4d6d; font-size: 28px;">Will you be my Valentine?</h1>
+            <button onclick="location.reload()">Play Again</button>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const startBtn = document.getElementById('start-btn');
+        const overlay = document.getElementById('overlay');
+        const victory = document.getElementById('victory');
+        const leftZone = document.getElementById('left-zone');
+        const rightZone = document.getElementById('right-zone');
+
+        let player = { x: 50, y: 300, w: 30, h: 30, dy: 0, speed: 5, jump: 12, grounded: false };
+        const gravity = 0.6;
+        const keys = {};
+        const platforms = [
+            { x: 0, y: 370, w: 600, h: 30 }, 
+            { x: 180, y: 270, w: 120, h: 10 },
+            { x: 380, y: 180, w: 120, h: 10 }
+        ];
+        const goal = { x: 450, y: 140, w: 40, h: 40 };
+        let particles = [];
+        let gameRunning = false;
+
+        // Desktop Controls
+        window.addEventListener('keydown', e => keys[e.code] = true);
+        window.addEventListener('keyup', e => keys[e.code] = false);
+
+        // Mobile Controls
+        leftZone.addEventListener('touchstart', (e) => { e.preventDefault(); keys['ArrowLeft'] = true; });
+        leftZone.addEventListener('touchend', () => { keys['ArrowLeft'] = false; });
+        rightZone.addEventListener('touchstart', (e) => { 
+            e.preventDefault(); 
+            if (player.grounded) { player.dy = -player.jump; player.grounded = false; }
+            keys['ArrowRight'] = true; 
+        });
+        rightZone.addEventListener('touchend', () => { keys['ArrowRight'] = false; });
+
+        startBtn.onclick = () => { overlay.style.display = 'none'; gameRunning = true; gameLoop(); };
+
+        function drawHeart(x, y, w, h) {
+            ctx.fillStyle = "#ff4d6d";
+            ctx.beginPath();
+            ctx.moveTo(x + w / 2, y + h);
+            ctx.bezierCurveTo(x, y + h - h*0.3, x, y, x + w / 2, y + h*0.3);
+            ctx.bezierCurveTo(x + w, y, x + w, y + h - h*0.3, x + w / 2, y + h);
+            ctx.fill();
+        }
+
+        function createConfetti() {
+            for(let i=0; i<80; i++) {
+                particles.push({ x: Math.random()*600, y: Math.random()*400-400, r: Math.random()*4+2, color: `hsl(${Math.random()*360},100%,50%)`, tilt: Math.random()*10 });
+            }
+        }
+
+        function update() {
+            if (keys['ArrowRight']) player.x += player.speed;
+            if (keys['ArrowLeft']) player.x -= player.speed;
+            if ((keys['ArrowUp'] || keys['Space']) && player.grounded) {
+                player.dy = -player.jump;
+                player.grounded = false;
+            }
+
+            player.dy += gravity;
+            player.y += player.dy;
+            player.grounded = false;
+
+            platforms.forEach(p => {
+                if (player.x < p.x + p.w && player.x + player.w > p.x &&
+                    player.y < p.y + p.h && player.y + player.h > p.y && player.dy >= 0) {
+                    player.y = p.y - player.h;
+                    player.dy = 0;
+                    player.grounded = true;
+                }
+            });
+
+            if (player.x < 0) player.x = 0;
+            if (player.x > 570) player.x = 570;
+
+            if (player.x < goal.x + goal.w && player.x + player.w > goal.x &&
+                player.y < goal.y + goal.h && player.y + player.h > goal.y) {
+                victory.style.display = 'flex';
+                createConfetti();
+                gameRunning = false;
+            }
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, 600, 400);
+            ctx.font = "30px Arial";
+            ctx.fillText("🏆", goal.x, goal.y + 30);
+            platforms.forEach(p => {
+                ctx.fillStyle = "#8B4513"; ctx.fillRect(p.x, p.y, p.w, p.h);
+                ctx.fillStyle = "#228B22"; ctx.fillRect(p.x, p.y, p.w, 5);
+            });
+            drawHeart(player.x, player.y, player.w, player.h);
+            particles.forEach(p => {
+                ctx.fillStyle = p.color; ctx.fillRect(p.x, p.y, p.r, p.r);
+                p.y += 3; p.x += Math.sin(p.y/10);
+            });
+        }
+
+        function gameLoop() {
+            update();
+            draw();
+            if(gameRunning || victory.style.display === 'flex') requestAnimationFrame(gameLoop);
+        }
+    </script>
+</body>
+</html>
