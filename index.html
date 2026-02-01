@@ -2,50 +2,97 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Super Anusha World ❤️</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Anusha's Valentine Quest ❤️</title>
     <style>
-        * { -webkit-backface-visibility: hidden; -webkit-transform: translateZ(0); }
+        * { 
+            -webkit-backface-visibility: hidden; 
+            -webkit-transform: translateZ(0); 
+            -webkit-tap-highlight-color: transparent; 
+            outline: none; 
+            user-select: none;
+            -webkit-user-select: none;
+        }
         body { 
-            background: linear-gradient(to bottom, #ffafbd, #ffc3a0); 
-            margin: 0; overflow: hidden; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-            display: flex; justify-content: center; align-items: center; height: 100vh; 
-            touch-action: none; position: fixed; width: 100%; 
+            background: #1a010a; 
+            margin: 0; 
+            overflow: hidden; 
+            font-family: 'Segoe UI', sans-serif; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            height: 100vh; 
+            width: 100vw;
+            touch-action: none; 
+            position: fixed; 
         }
         #game-wrapper { 
-            position: relative; width: 100%; max-width: 900px; height: 500px; 
-            background: linear-gradient(to bottom, #87CEEB 0%, #E0F6FF 100%); 
-            overflow: hidden; border: 8px solid white; border-radius: 25px;
-            box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+            position: relative; 
+            width: 100%; 
+            height: 100%; 
+            max-width: 900px; 
+            max-height: 500px;
+            background: linear-gradient(to bottom, #87CEEB, #E0F6FF); 
+            overflow: hidden; 
+            border: 4px solid white; 
+            border-radius: 15px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5); 
         }
-        canvas { display: block; width: 100%; height: 100%; }
+        canvas { 
+            display: block; 
+            width: 100%; 
+            height: 100%; 
+            object-fit: contain;
+        }
         .screen { 
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
-            display: flex; flex-direction: column; align-items: center; justify-content: center; 
-            background: rgba(255, 175, 189, 0.9); z-index: 100; text-align: center; 
-            backdrop-filter: blur(5px);
+            position: absolute; 
+            top: 0; left: 0; 
+            width: 100%; height: 100%; 
+            display: flex; flex-direction: column; 
+            align-items: center; justify-content: center; 
+            background: rgba(255, 175, 189, 0.95); 
+            z-index: 100; text-align: center; 
+            backdrop-filter: blur(8px); 
+            padding: 20px; box-sizing: border-box; 
         }
-        h1 { color: white; text-shadow: 3px 3px 0px #ff4d6d; font-size: 42px; margin-bottom: 20px; }
+        h1 { color: white; text-shadow: 2px 2px 0px #ff4d6d; font-size: clamp(24px, 8vw, 38px); margin: 10px; }
         button { 
-            padding: 18px 45px; font-size: 22px; background: #ff4d6d; color: white; 
-            border: none; border-radius: 50px; cursor: pointer; font-weight: bold;
-            box-shadow: 0 6px #c9184a; transition: 0.2s;
+            padding: 15px 40px; 
+            font-size: 18px; 
+            background: #ff4d6d; 
+            color: white; 
+            border: none; 
+            border-radius: 50px; 
+            cursor: pointer; 
+            font-weight: bold; 
+            box-shadow: 0 4px #c9184a; 
         }
-        button:hover { background: #ff758c; transform: translateY(-2px); }
-        button:active { transform: translateY(3px); box-shadow: 0 2px #c9184a; }
-        
         #touch-controls { 
-            position: absolute; bottom: 25px; width: 100%; display: flex; 
-            justify-content: space-between; padding: 0 30px; box-sizing: border-box; 
-            z-index: 50; pointer-events: none; 
+            position: absolute; 
+            bottom: 20px; 
+            width: 100%; 
+            display: flex; 
+            justify-content: space-between; 
+            padding: 0 25px; 
+            box-sizing: border-box; 
+            z-index: 200; 
+            pointer-events: none; 
         }
+        .ctrl-group { display: flex; gap: 15px; pointer-events: none; }
         .t-btn { 
-            width: 80px; height: 80px; background: rgba(255,255,255,0.5); 
-            border-radius: 50%; pointer-events: auto; display: flex; 
-            align-items: center; justify-content: center; font-size: 30px;
-            color: #ff4d6d; border: 3px solid white; user-select: none;
-            backdrop-filter: blur(2px);
+            width: clamp(65px, 15vw, 85px); 
+            height: clamp(65px, 15vw, 85px); 
+            background: rgba(255,255,255,0.4); 
+            border-radius: 50%; 
+            pointer-events: auto; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            font-size: 30px; 
+            color: white; 
+            border: 3px solid white; 
         }
+        .t-btn:active { background: #ff4d6d; transform: scale(0.9); }
     </style>
 </head>
 <body>
@@ -54,206 +101,175 @@
     <canvas id="gameCanvas"></canvas>
     
     <div id="start-screen" class="screen">
-        <h1>Super Anusha World</h1>
-        <button id="start-btn">START QUEST</button>
+        <h1>Anusha's Quest ❤️</h1>
+        <p style="color: white; font-weight: bold; margin-bottom: 20px;">For the best experience, turn your phone sideways!</p>
+        <button id="start-btn">PLAY NOW</button>
     </div>
 
-    <div id="victory-screen" class="screen" style="display:none;">
-        <h1 style="font-size: 50px;">❤️ ANUSHA ❤️</h1>
-        <p style="color: white; font-size: 24px; font-weight: bold;">You found all my love!</p>
-        <h2 style="color: #ff4d6d; background: white; padding: 10px 20px; border-radius: 20px;">Will you be my Valentine?</h2>
-        <button onclick="location.reload()" style="margin-top:20px;">PLAY AGAIN</button>
+    <div id="game-over-screen" class="screen" style="display:none; background: rgba(0,0,0,0.9);">
+        <h1 style="color: #ff4d6d;">💔 Almost There!</h1>
+        <button onclick="location.reload()">RETRY</button>
     </div>
 
-    <div id="touch-controls">
-        <div style="display:flex; gap:20px;">
+    <div id="gift-screen" class="screen" style="display:none;">
+        <h1>Valentine Unlocked! 🎁</h1>
+        <div style="background: white; color: #ff4d6d; padding: 20px; border-radius: 15px; max-width: 90%;">
+            <p>You made it, Anusha!</p>
+            <p style="font-style: italic; font-weight: bold;">I love you more than everything!</p>
+        </div>
+        <button onclick="location.reload()" style="margin-top: 15px;">PLAY AGAIN</button>
+    </div>
+
+    <div id="touch-controls" style="display: none;">
+        <div class="ctrl-group">
             <div id="btn-left" class="t-btn">◀</div>
             <div id="btn-right" class="t-btn">▶</div>
         </div>
-        <div id="btn-jump" class="t-btn">▲</div>
+        <div class="ctrl-group">
+            <div id="btn-jump" class="t-btn">▲</div>
+        </div>
     </div>
 </div>
 
 <script>
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
-canvas.width = 900;
+canvas.width = 900; 
 canvas.height = 500;
 
-let gameActive = false;
-let score = 0;
-const gravity = 0.7;
-const worldWidth = 3000; // Even bigger world!
-
-const player = { x: 100, y: 300, w: 35, h: 35, vx: 0, vy: 0, speed: 7, jumpPower: -16, grounded: false };
+let gameActive = false, lives = 5, loveMeter = 0;
+const gravity = 0.5;
+const player = { x: 100, y: 300, w: 35, h: 35, vx: 0, vy: 0, speed: 7, jumpPower: -14, grounded: false, invul: 0, coyoteTime: 0 };
 const camera = { x: 0 };
 const keys = {};
 
 const platforms = [
-    { x: 0, y: 420, w: 700, h: 80 },
-    { x: 800, y: 330, w: 300, h: 30 },
-    { x: 1200, y: 240, w: 300, h: 30 },
-    { x: 1600, y: 360, w: 400, h: 30 },
-    { x: 2100, y: 270, w: 300, h: 30 },
-    { x: 2500, y: 380, w: 500, h: 120 },
+    {x:0,y:420,w:700,h:80},{x:850,y:330,w:350,h:30},{x:1300,y:250,w:350,h:30},
+    {x:1750,y:350,w:450,h:30},{x:2300,y:250,w:300,h:30},{x:2700,y:400,w:600,h:100}
 ];
 
-const hearts = [
-    { x: 850, y: 290, collected: false },
-    { x: 1250, y: 200, collected: false },
-    { x: 1700, y: 320, collected: false },
-    { x: 2200, y: 230, collected: false },
-    { x: 2600, y: 340, collected: false }
+const villains = [
+    {x:950,y:290,w:35,h:35,startX:900,endX:1150,vx:0.8,alive:true},
+    {x:1850,y:310,w:35,h:35,startX:1800,endX:2150,vx:0.8,alive:true},
+    {x:2400,y:210,w:35,h:35,startX:2300,endX:2550,vx:0.8,alive:true}
 ];
 
-const clouds = Array.from({length: 15}, () => ({
-    x: Math.random() * worldWidth,
-    y: Math.random() * 200,
-    s: 0.2 + Math.random() * 0.5, // Parallax speed
-    w: 60 + Math.random() * 100
-}));
+const collectibles = [{x:1020,y:250,collected:false},{x:1450,y:150,collected:false},{x:1950,y:270,collected:false},{x:2450,y:170,collected:false}];
+const particles = [];
 
-// Controls setup
-window.addEventListener('keydown', e => keys[e.code] = true);
+// Handle Inputs
+function jump() { 
+    if((player.grounded || player.coyoteTime > 0) && gameActive) { 
+        player.vy = player.jumpPower; 
+        player.grounded = false; 
+        player.coyoteTime = 0;
+    } 
+}
+
+function setupBtn(id, key, action) {
+    const el = document.getElementById(id);
+    el.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        if(action) action(); else keys[key] = true;
+    }, {passive: false});
+    el.addEventListener('touchend', (e) => {
+        e.preventDefault();
+        keys[key] = false;
+    }, {passive: false});
+}
+
+setupBtn('btn-left', 'ArrowLeft');
+setupBtn('btn-right', 'ArrowRight');
+setupBtn('btn-jump', 'ArrowUp', jump);
+
+window.addEventListener('keydown', e => { 
+    keys[e.code] = true; 
+    if(e.code === 'Space' || e.code === 'ArrowUp') jump();
+});
 window.addEventListener('keyup', e => keys[e.code] = false);
 
-function bindTouch(id, key) {
-    const btn = document.getElementById(id);
-    btn.addEventListener('touchstart', (e) => { e.preventDefault(); keys[key] = true; }, {passive: false});
-    btn.addEventListener('touchend', (e) => { e.preventDefault(); keys[key] = false; }, {passive: false});
+function drawHeart(x, y, s, c) {
+    ctx.fillStyle = c; ctx.beginPath();
+    ctx.moveTo(x, y + s/4); ctx.quadraticCurveTo(x, y, x - s/2, y);
+    ctx.quadraticCurveTo(x - s, y, x - s, y + s/2); ctx.quadraticCurveTo(x - s, y + s, x, y + s * 1.5);
+    ctx.quadraticCurveTo(x + s, y + s, x + s, y + s/2); ctx.quadraticCurveTo(x + s, y, x + s/2, y);
+    ctx.quadraticCurveTo(x, y, x, y + s/4); ctx.fill();
 }
-bindTouch('btn-left', 'ArrowLeft');
-bindTouch('btn-right', 'ArrowRight');
-bindTouch('btn-jump', 'ArrowUp');
 
-document.getElementById('start-btn').addEventListener('click', () => {
-    document.getElementById('start-screen').style.display = 'none';
-    gameActive = true;
-    gameLoop();
-});
-
-function drawHeart(x, y, size, color, glow = false) {
-    if(glow) {
-        ctx.shadowBlur = 15;
-        ctx.shadowColor = color;
-    }
-    ctx.fillStyle = color;
-    ctx.beginPath();
-    ctx.moveTo(x, y + size/4);
-    ctx.quadraticCurveTo(x, y, x - size/2, y);
-    ctx.quadraticCurveTo(x - size, y, x - size, y + size/2);
-    ctx.quadraticCurveTo(x - size, y + size, x, y + size * 1.5);
-    ctx.quadraticCurveTo(x + size, y + size, x + size, y + size/2);
-    ctx.quadraticCurveTo(x + size, y, x + size/2, y);
-    ctx.quadraticCurveTo(x, y, x, y + size/4);
-    ctx.fill();
-    ctx.shadowBlur = 0; // Reset
+function spawnParticles(x, y, color) {
+    for(let i=0; i<8; i++) { particles.push({x:x, y:y, vx:(Math.random()-0.5)*10, vy:(Math.random()-0.5)*10, life:30, color:color}); }
 }
 
 function update() {
-    if (keys['ArrowLeft']) player.vx = -player.speed;
-    else if (keys['ArrowRight']) player.vx = player.speed;
-    else player.vx *= 0.85;
+    if(!gameActive) return;
+    let moveSpeed = player.speed;
+    if(!player.grounded) moveSpeed *= 1.2; 
 
-    if (keys['ArrowUp'] && player.grounded) {
-        player.vy = player.jumpPower;
-        player.grounded = false;
-    }
+    if(keys['ArrowLeft']) player.vx = -moveSpeed;
+    else if(keys['ArrowRight']) player.vx = moveSpeed;
+    else player.vx *= 0.8;
 
-    player.vy += gravity;
-    player.x += player.vx;
-    player.y += player.vy;
+    player.vy += gravity; 
+    if (!keys['Space'] && !keys['ArrowUp'] && player.vy < 0) player.vy += gravity; 
 
+    player.x += player.vx; 
+    player.y += player.vy; 
+
+    let wasGrounded = player.grounded;
     player.grounded = false;
-    platforms.forEach(p => {
-        if (player.x + player.w > p.x && player.x < p.x + p.w &&
-            player.y + player.h > p.y && player.y + player.h < p.y + p.h && player.vy >= 0) {
-            player.y = p.y - player.h;
-            player.vy = 0;
-            player.grounded = true;
+
+    platforms.forEach(p => { 
+        if(player.x+player.w>p.x && player.x<p.x+p.w && player.y+player.h>p.y && player.y+player.h<p.y+p.h && player.vy>=0){ 
+            player.y=p.y-player.h; player.vy=0; player.grounded=true; 
+        } 
+    });
+
+    if (wasGrounded && !player.grounded) player.coyoteTime = 12;
+    if (player.coyoteTime > 0) player.coyoteTime--;
+
+    villains.forEach(v => {
+        if(!v.alive) return;
+        v.x += v.vx; if(v.x < v.startX || v.x > v.endX) v.vx *= -1;
+        if(player.x < v.x + v.w && player.x + player.w > v.x && player.y < v.y + v.h && player.y + player.h > v.y) {
+            if(player.vy > 0 && player.y < v.y + (v.h/2)) { v.alive = false; spawnParticles(v.x+17, v.y+17, "#000"); player.vy = -10; }
+            else if(player.invul <= 0) { lives--; player.invul = 60; if(lives <= 0) { gameActive = false; document.getElementById('game-over-screen').style.display='flex'; } }
         }
     });
 
-    if (player.x < 0) player.x = 0;
-    if (player.x > worldWidth - player.w) player.x = worldWidth - player.w;
-    if (player.y > 600) { player.x = 100; player.y = 300; player.vy = 0; } 
-
-    camera.x = player.x - canvas.width / 2;
-    if (camera.x < 0) camera.x = 0;
-    if (camera.x > worldWidth - canvas.width) camera.x = worldWidth - canvas.width;
-
-    hearts.forEach(h => {
-        if (!h.collected && Math.hypot(player.x - h.x, player.y - h.y) < 45) {
-            h.collected = true;
-            score++;
-        }
-    });
-
-    if (score === hearts.length && player.x > 2700) {
-        gameActive = false;
-        document.getElementById('victory-screen').style.display = 'flex';
-    }
+    collectibles.forEach(c => { if(!c.collected && Math.hypot(player.x-c.x, player.y-c.y) < 40) { c.collected = true; loveMeter++; spawnParticles(c.x, c.y, "#ff4d6d"); } });
+    for(let i=particles.length-1; i>=0; i--) { let p = particles[i]; p.x += p.vx; p.y += p.vy; p.life--; if(p.life <= 0) particles.splice(i, 1); }
+    
+    if(player.x > 3000) { gameActive = false; document.getElementById('gift-screen').style.display='flex'; document.getElementById('touch-controls').style.display='none'; }
+    if(player.y > 600) { lives--; player.x=100; player.y=100; player.vy=0; player.invul=60; if(lives <= 0) {gameActive = false; document.getElementById('game-over-screen').style.display='flex';} }
+    
+    camera.x = player.x - 300; if(camera.x<0) camera.x=0;
+    if(player.invul>0) player.invul--;
 }
 
 function draw() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    // Draw Parallax Clouds
-    clouds.forEach(c => {
-        ctx.fillStyle = "rgba(255, 255, 255, 0.6)";
-        ctx.beginPath();
-        ctx.ellipse(c.x - (camera.x * c.s), c.y, c.w/2, 25, 0, 0, Math.PI*2);
-        ctx.fill();
-    });
-
-    ctx.save();
-    ctx.translate(-Math.floor(camera.x), 0);
-
-    // Platforms
-    platforms.forEach(p => {
-        // Platform Body
-        let grad = ctx.createLinearGradient(p.x, p.y, p.x, p.y + p.h);
-        grad.addColorStop(0, '#ff9a9e');
-        grad.addColorStop(1, '#fecfef');
-        ctx.fillStyle = grad;
-        
-        // Rounded corners effect (simple rect for perf)
-        ctx.fillRect(p.x, p.y, p.w, p.h);
-        
-        // "Frosting" Top
-        ctx.fillStyle = "rgba(255,255,255,0.8)";
-        ctx.fillRect(p.x, p.y, p.w, 6);
-    });
-
-    // Hearts
-    hearts.forEach(h => {
-        if (!h.collected) {
-            let bob = Math.sin(Date.now() / 200) * 5;
-            drawHeart(h.x, h.y + bob, 15, "#ff4d6d", true);
-        }
-    });
-
-    // Finish Line
-    ctx.font = "60px Arial";
-    ctx.fillText("🏰", 2750, 370);
-
-    // Player (The Main Heart)
-    drawHeart(player.x + 15, player.y, 18, "#ff0054", true);
-
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    ctx.save(); ctx.translate(-Math.floor(camera.x), 0);
+    for(let i=0; i<12; i++) { ctx.fillStyle="rgba(255,255,255,0.7)"; ctx.beginPath(); ctx.arc(i*300, 100+(i%2*50), 40, 0, 7); ctx.fill(); }
+    platforms.forEach(p => { ctx.fillStyle="#ff9a9e"; ctx.fillRect(p.x,p.y,p.w,p.h); ctx.fillStyle="white"; ctx.fillRect(p.x,p.y,p.w,5); });
+    collectibles.forEach(c => { if(!c.collected) drawHeart(c.x, c.y + Math.sin(Date.now()/200)*5, 12, "#ff4d6d"); });
+    villains.forEach(v=>{ if(v.alive){ ctx.fillStyle="#000"; ctx.beginPath(); ctx.arc(v.x+17,v.y+17,17,0,7); ctx.fill(); ctx.fillStyle="white"; ctx.fillRect(v.x+10,v.y+12,4,4); ctx.fillRect(v.x+20,v.y+12,4,4);} });
+    particles.forEach(p => { ctx.fillStyle=p.color; ctx.fillRect(p.x, p.y, 4, 4); });
+    ctx.font="70px Arial"; ctx.fillText("🏰", 3050, 410);
+    if(player.invul%4<2) drawHeart(player.x+15, player.y, 18, "#ff0054");
     ctx.restore();
-
-    // UI Score
-    ctx.fillStyle = "#ff4d6d";
-    ctx.font = "bold 24px 'Segoe UI'";
-    ctx.fillText(`Love Found: ${score}/${hearts.length}`, 30, 45);
+    ctx.fillStyle="white"; ctx.font="bold 20px Arial";
+    ctx.fillText(`Love: ${loveMeter}`, 20, 35);
+    for(let i=0; i<lives; i++) drawHeart(canvas.width-180+(i*25), 30, 7, "red");
 }
 
-function gameLoop() {
-    if (!gameActive) return;
-    update();
-    draw();
-    requestAnimationFrame(gameLoop);
-}
+function gameLoop() { if(gameActive) { update(); draw(); requestAnimationFrame(gameLoop); } }
+
+document.getElementById('start-btn').onclick = () => { 
+    document.getElementById('start-screen').style.display='none'; 
+    document.getElementById('touch-controls').style.display='flex';
+    gameActive=true; 
+    gameLoop(); 
+};
 </script>
 </body>
 </html>
