@@ -5,104 +5,30 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Anusha's Valentine Quest ❤️</title>
     <style>
-        * { 
-            -webkit-backface-visibility: hidden; 
-            -webkit-transform: translateZ(0); 
-            -webkit-tap-highlight-color: transparent; 
-            outline: none; 
-            user-select: none;
-            -webkit-user-select: none;
-        }
-        body { 
-            background: #1a010a; 
-            margin: 0; 
-            overflow: hidden; 
-            font-family: 'Segoe UI', sans-serif; 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            height: 100vh; 
-            width: 100vw;
-            touch-action: none; 
-            position: fixed; 
-        }
-        #game-wrapper { 
-            position: relative; 
-            width: 100%; 
-            height: 100%; 
-            max-width: 900px; 
-            max-height: 500px;
-            background: linear-gradient(to bottom, #87CEEB, #E0F6FF); 
-            overflow: hidden; 
-            border: 4px solid white; 
-            border-radius: 15px; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5); 
-        }
-        canvas { 
-            display: block; 
-            width: 100%; 
-            height: 100%; 
-            object-fit: contain;
-        }
-        .screen { 
-            position: absolute; 
-            top: 0; left: 0; 
-            width: 100%; height: 100%; 
-            display: flex; flex-direction: column; 
-            align-items: center; justify-content: center; 
-            background: rgba(255, 175, 189, 0.95); 
-            z-index: 100; text-align: center; 
-            backdrop-filter: blur(8px); 
-            padding: 20px; box-sizing: border-box; 
-        }
+        * { -webkit-backface-visibility: hidden; -webkit-transform: translateZ(0); -webkit-tap-highlight-color: transparent; outline: none; user-select: none; -webkit-user-select: none; }
+        body { background: #1a010a; margin: 0; overflow: hidden; font-family: 'Segoe UI', sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; width: 100vw; touch-action: none; position: fixed; }
+        #game-wrapper { position: relative; width: 100%; height: 100%; max-width: 900px; max-height: 500px; background: linear-gradient(to bottom, #87CEEB, #E0F6FF); overflow: hidden; border: 4px solid white; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        canvas { display: block; width: 100%; height: 100%; object-fit: contain; }
+        .screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(255, 175, 189, 0.95); z-index: 1000; text-align: center; backdrop-filter: blur(8px); padding: 20px; box-sizing: border-box; }
         h1 { color: white; text-shadow: 2px 2px 0px #ff4d6d; font-size: clamp(24px, 8vw, 38px); margin: 10px; }
-        button { 
-            padding: 15px 40px; 
-            font-size: 18px; 
-            background: #ff4d6d; 
-            color: white; 
-            border: none; 
-            border-radius: 50px; 
-            cursor: pointer; 
-            font-weight: bold; 
-            box-shadow: 0 4px #c9184a; 
-        }
-        #touch-controls { 
-            position: absolute; 
-            bottom: 20px; 
-            width: 100%; 
-            display: flex; 
-            justify-content: space-between; 
-            padding: 0 25px; 
-            box-sizing: border-box; 
-            z-index: 200; 
-            pointer-events: none; 
-        }
+        button { padding: 15px 40px; font-size: 18px; background: #ff4d6d; color: white; border: none; border-radius: 50px; cursor: pointer; font-weight: bold; box-shadow: 0 4px #c9184a; }
+        #touch-controls { position: absolute; bottom: 20px; width: 100%; display: flex; justify-content: space-between; padding: 0 25px; box-sizing: border-box; z-index: 200; pointer-events: none; }
         .ctrl-group { display: flex; gap: 15px; pointer-events: none; }
-        .t-btn { 
-            width: clamp(65px, 15vw, 85px); 
-            height: clamp(65px, 15vw, 85px); 
-            background: rgba(255,255,255,0.4); 
-            border-radius: 50%; 
-            pointer-events: auto; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            font-size: 30px; 
-            color: white; 
-            border: 3px solid white; 
-        }
+        .t-btn { width: clamp(60px, 14vw, 80px); height: clamp(60px, 14vw, 80px); background: rgba(255,255,255,0.4); border-radius: 50%; pointer-events: auto; display: flex; align-items: center; justify-content: center; font-size: 28px; color: white; border: 3px solid white; }
+        #btn-shoot { background: rgba(255, 77, 109, 0.6); }
         .t-btn:active { background: #ff4d6d; transform: scale(0.9); }
+        #level-up { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #ff4d6d; font-size: 50px; font-weight: bold; text-shadow: 2px 2px white; display: none; z-index: 500; pointer-events: none; }
     </style>
 </head>
 <body>
 
 <div id="game-wrapper">
     <canvas id="gameCanvas"></canvas>
+    <div id="level-up">LEVEL UP! 💖</div>
     
     <div id="start-screen" class="screen">
         <h1>Anusha's Quest ❤️</h1>
-        <p style="color: white; font-weight: bold; margin-bottom: 20px;">For the best experience, turn your phone sideways!</p>
+        <p style="color: white; font-weight: bold; margin-bottom: 20px;">Reach the Castle to win!</p>
         <button id="start-btn">PLAY NOW</button>
     </div>
 
@@ -115,7 +41,7 @@
         <h1>Valentine Unlocked! 🎁</h1>
         <div style="background: white; color: #ff4d6d; padding: 20px; border-radius: 15px; max-width: 90%;">
             <p>You made it, Anusha!</p>
-            <p style="font-style: italic; font-weight: bold;">I love you more than everything!</p>
+            <p id="final-msg" style="font-style: italic; font-weight: bold;">I love you more than everything!</p>
         </div>
         <button onclick="location.reload()" style="margin-top: 15px;">PLAY AGAIN</button>
     </div>
@@ -126,6 +52,7 @@
             <div id="btn-right" class="t-btn">▶</div>
         </div>
         <div class="ctrl-group">
+            <div id="btn-shoot" class="t-btn">💖</div>
             <div id="btn-jump" class="t-btn">▲</div>
         </div>
     </div>
@@ -134,59 +61,57 @@
 <script>
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
-canvas.width = 900; 
-canvas.height = 500;
+canvas.width = 900; canvas.height = 500;
 
-let gameActive = false, lives = 5, loveMeter = 0;
-const gravity = 0.5;
-const player = { x: 100, y: 300, w: 35, h: 35, vx: 0, vy: 0, speed: 7, jumpPower: -14, grounded: false, invul: 0, coyoteTime: 0 };
+let gameActive = false, lives = 5, loveMeter = 0, currentLevel = 1, cheatActive = false;
+const gravity = 0.45; 
+const player = { x: 100, y: 300, w: 35, h: 35, vx: 0, vy: 0, speed: 7, jumpPower: -13, grounded: false, invul: 0, coyoteTime: 0, facing: 1 };
 const camera = { x: 0 };
 const keys = {};
-
-const platforms = [
-    {x:0,y:420,w:700,h:80},{x:850,y:330,w:350,h:30},{x:1300,y:250,w:350,h:30},
-    {x:1750,y:350,w:450,h:30},{x:2300,y:250,w:300,h:30},{x:2700,y:400,w:600,h:100}
-];
-
-const villains = [
-    {x:950,y:290,w:35,h:35,startX:900,endX:1150,vx:0.8,alive:true},
-    {x:1850,y:310,w:35,h:35,startX:1800,endX:2150,vx:0.8,alive:true},
-    {x:2400,y:210,w:35,h:35,startX:2300,endX:2550,vx:0.8,alive:true}
-];
-
-const collectibles = [{x:1020,y:250,collected:false},{x:1450,y:150,collected:false},{x:1950,y:270,collected:false},{x:2450,y:170,collected:false}];
 const particles = [];
+const bullets = [];
 
-// Handle Inputs
-function jump() { 
-    if((player.grounded || player.coyoteTime > 0) && gameActive) { 
-        player.vy = player.jumpPower; 
-        player.grounded = false; 
-        player.coyoteTime = 0;
-    } 
+let boss = { x: 2450, y: 80, w: 120, h: 80, hp: 5, speed: 1.0, dir: 1, lightning: [] };
+
+const levels = {
+    1: {
+        platforms: [{x:0, y:420, w:700, h:80}, {x:850, y:330, w:300, h:30}, {x:1250, y:250, w:300, h:30}, {x:1700, y:350, w:400, h:30}],
+        movingPlatforms: [],
+        villains: [{x:950, y:295, w:35, h:35, startX:900, endX:1100, vx:1.5, alive:true}],
+        hearts: [{x:1000, y:250, collected:false}, {x:1400, y:150, collected:false}, {x:1850, y:280, collected:false}],
+        goalX: 2050
+    },
+    2: {
+        platforms: [{x:0, y:420, w:400, h:80}, {x:400, y:450, w:1800, h:50}, {x:2200, y:400, w:1000, h:100}],
+        movingPlatforms: [
+            {x:500, y:300, w:250, h:25, range: 100, speed: 0.007, basePad: 500},
+            {x:1100, y:220, w:250, h:25, range: 120, speed: 0.008, basePad: 1100},
+            {x:1700, y:300, w:250, h:25, range: 100, speed: 0.007, basePad: 1700}
+        ],
+        villains: [{x:2300, y:365, w:35, h:35, startX:2250, endX:2600, vx:1.5, alive:true}],
+        hearts: [{x:600, y:200, collected:false}, {x:1200, y:120, collected:false}, {x:1800, y:200, collected:false}],
+        goalX: 2950
+    }
+};
+
+let activeLevel = levels[1];
+
+function shoot() {
+    if(!gameActive) return;
+    bullets.push({ x: player.x + player.w/2, y: player.y + player.h/2, vx: player.facing * 12, life: 80 });
 }
 
-function setupBtn(id, key, action) {
-    const el = document.getElementById(id);
-    el.addEventListener('touchstart', (e) => {
-        e.preventDefault();
-        if(action) action(); else keys[key] = true;
-    }, {passive: false});
-    el.addEventListener('touchend', (e) => {
-        e.preventDefault();
-        keys[key] = false;
-    }, {passive: false});
+function spawnParticles(x, y, color, type = 'square') {
+    for(let i=0; i<10; i++) {
+        particles.push({
+            x: x, y: y, 
+            vx: (Math.random() - 0.5) * 8, 
+            vy: (Math.random() - 0.5) * 8 - 2,
+            life: 40, color: color, type: type,
+            size: Math.random() * 5 + 5
+        });
+    }
 }
-
-setupBtn('btn-left', 'ArrowLeft');
-setupBtn('btn-right', 'ArrowRight');
-setupBtn('btn-jump', 'ArrowUp', jump);
-
-window.addEventListener('keydown', e => { 
-    keys[e.code] = true; 
-    if(e.code === 'Space' || e.code === 'ArrowUp') jump();
-});
-window.addEventListener('keyup', e => keys[e.code] = false);
 
 function drawHeart(x, y, s, c) {
     ctx.fillStyle = c; ctx.beginPath();
@@ -196,79 +121,179 @@ function drawHeart(x, y, s, c) {
     ctx.quadraticCurveTo(x, y, x, y + s/4); ctx.fill();
 }
 
-function spawnParticles(x, y, color) {
-    for(let i=0; i<8; i++) { particles.push({x:x, y:y, vx:(Math.random()-0.5)*10, vy:(Math.random()-0.5)*10, life:30, color:color}); }
+function showWinScreen() {
+    gameActive = false;
+    spawnParticles(player.x + 20, player.y, "gold", "heart");
+    spawnParticles(player.x + 20, player.y, "red", "heart");
+    if(loveMeter >= 6) document.getElementById('final-msg').innerText = "Perfect Score! You're my whole world! ❤️";
+    document.getElementById('gift-screen').style.display = 'flex';
+    document.getElementById('touch-controls').style.display = 'none';
+}
+
+function jump() { 
+    if((player.grounded || player.coyoteTime > 0) && gameActive) { 
+        player.vy = player.jumpPower; player.grounded = false; player.coyoteTime = 0;
+    } 
 }
 
 function update() {
     if(!gameActive) return;
-    let moveSpeed = player.speed;
-    if(!player.grounded) moveSpeed *= 1.2; 
 
-    if(keys['ArrowLeft']) player.vx = -moveSpeed;
-    else if(keys['ArrowRight']) player.vx = moveSpeed;
+    if(keys['ArrowLeft']) { player.vx = -player.speed; player.facing = -1; }
+    else if(keys['ArrowRight']) { player.vx = player.speed; player.facing = 1; }
     else player.vx *= 0.8;
 
-    player.vy += gravity; 
-    if (!keys['Space'] && !keys['ArrowUp'] && player.vy < 0) player.vy += gravity; 
-
-    player.x += player.vx; 
-    player.y += player.vy; 
+    player.vy += gravity;
+    player.x += player.vx;
+    player.y += player.vy;
 
     let wasGrounded = player.grounded;
     player.grounded = false;
 
-    platforms.forEach(p => { 
-        if(player.x+player.w>p.x && player.x<p.x+p.w && player.y+player.h>p.y && player.y+player.h<p.y+p.h && player.vy>=0){ 
-            player.y=p.y-player.h; player.vy=0; player.grounded=true; 
+    activeLevel.movingPlatforms.forEach(mp => {
+        let oldX = mp.x;
+        mp.x = mp.basePad + Math.sin(Date.now() * mp.speed) * mp.range;
+        if(player.vy >= 0 && player.x + player.w > mp.x && player.x < mp.x + mp.w && player.y + player.h <= mp.y + 12 && player.y + player.h + player.vy >= mp.y) {
+            player.y = mp.y - player.h; player.vy = 0; player.grounded = true; player.x += (mp.x - oldX); 
+        }
+    });
+
+    activeLevel.platforms.forEach(p => { 
+        if(player.x + player.w > p.x && player.x < p.x + p.w && player.y + player.h <= p.y + 12 && player.y + player.h + player.vy >= p.y) { 
+            player.y = p.y - player.h; player.vy = 0; player.grounded = true; 
         } 
     });
 
     if (wasGrounded && !player.grounded) player.coyoteTime = 12;
     if (player.coyoteTime > 0) player.coyoteTime--;
 
-    villains.forEach(v => {
+    // Bullet Logic
+    for(let i = bullets.length - 1; i >= 0; i--) {
+        let b = bullets[i]; b.x += b.vx; b.life--;
+        if(currentLevel === 2 && boss.hp > 0 && b.x > boss.x && b.x < boss.x + boss.w && b.y > boss.y && b.y < boss.y + boss.h) {
+            boss.hp--; spawnParticles(b.x, b.y, "#ff4d6d", "heart"); bullets.splice(i, 1);
+            continue;
+        }
+        activeLevel.villains.forEach(v => {
+            if(v.alive && b.x > v.x && b.x < v.x + v.w && b.y > v.y && b.y < v.y + v.h) {
+                v.alive = false; spawnParticles(v.x + 17, v.y + 17, "#ff4d6d", "heart"); bullets.splice(i, 1);
+            }
+        });
+        if(b.life <= 0) bullets.splice(i, 1);
+    }
+
+    activeLevel.villains.forEach(v => {
         if(!v.alive) return;
         v.x += v.vx; if(v.x < v.startX || v.x > v.endX) v.vx *= -1;
         if(player.x < v.x + v.w && player.x + player.w > v.x && player.y < v.y + v.h && player.y + player.h > v.y) {
-            if(player.vy > 0 && player.y < v.y + (v.h/2)) { v.alive = false; spawnParticles(v.x+17, v.y+17, "#000"); player.vy = -10; }
-            else if(player.invul <= 0) { lives--; player.invul = 60; if(lives <= 0) { gameActive = false; document.getElementById('game-over-screen').style.display='flex'; } }
+            if(player.vy > 0 && player.y < v.y + 10) { 
+                v.alive = false; player.vy = -10; 
+                spawnParticles(v.x + 17, v.y + 17, "#ff4d6d", "heart"); 
+            }
+            else if(!cheatActive && player.invul <= 0) { lives--; player.invul = 60; }
         }
     });
 
-    collectibles.forEach(c => { if(!c.collected && Math.hypot(player.x-c.x, player.y-c.y) < 40) { c.collected = true; loveMeter++; spawnParticles(c.x, c.y, "#ff4d6d"); } });
-    for(let i=particles.length-1; i>=0; i--) { let p = particles[i]; p.x += p.vx; p.y += p.vy; p.life--; if(p.life <= 0) particles.splice(i, 1); }
-    
-    if(player.x > 3000) { gameActive = false; document.getElementById('gift-screen').style.display='flex'; document.getElementById('touch-controls').style.display='none'; }
-    if(player.y > 600) { lives--; player.x=100; player.y=100; player.vy=0; player.invul=60; if(lives <= 0) {gameActive = false; document.getElementById('game-over-screen').style.display='flex';} }
-    
-    camera.x = player.x - 300; if(camera.x<0) camera.x=0;
-    if(player.invul>0) player.invul--;
+    if (currentLevel === 2 && boss.hp > 0) {
+        boss.x += boss.speed * boss.dir;
+        if (boss.x > 2800 || boss.x < 2200) boss.dir *= -1;
+        if (Math.random() < 0.012) boss.lightning.push({ x: boss.x + 60, y: boss.y + 60 });
+        boss.lightning.forEach((l, i) => {
+            l.y += 3.5; 
+            if (player.x < l.x + 15 && player.x + player.w > l.x && player.y < l.y + 30 && player.y + player.h > l.y) {
+                if (!cheatActive && player.invul <= 0) { lives--; player.invul = 60; }
+                boss.lightning.splice(i, 1);
+            }
+        });
+    }
+
+    if(lives <= 0) { gameActive = false; document.getElementById('game-over-screen').style.display='flex'; document.getElementById('touch-controls').style.display='none';}
+
+    activeLevel.hearts.forEach(h => {
+        if(!h.collected && Math.hypot(player.x - h.x, player.y - h.y) < 45) { h.collected = true; loveMeter++; spawnParticles(h.x, h.y, "#ff4d6d", "heart"); }
+    });
+
+    for(let i=particles.length-1; i>=0; i--) {
+        let p = particles[i]; p.x += p.vx; p.y += p.vy; p.life--; 
+        if(p.life <= 0) particles.splice(i, 1);
+    }
+
+    // LEVEL END & WIN LOGIC
+    if(player.x > activeLevel.goalX) {
+        if(currentLevel === 1) { 
+            currentLevel = 2; activeLevel = levels[2]; 
+            player.x = 100; player.y = 300; 
+            const lu = document.getElementById('level-up');
+            lu.style.display = 'block';
+            setTimeout(() => lu.style.display = 'none', 1500);
+        } else {
+            showWinScreen(); // End game at castle
+        }
+    }
+
+    if(player.y > 600) { 
+        lives--; if(lives <= 0 && !cheatActive) { gameActive = false; document.getElementById('game-over-screen').style.display='flex'; }
+        else { player.x = 100; player.y = 100; player.invul = 60; player.vy = 0; }
+    }
+
+    if(cheatActive) lives = 99;
+    camera.x = player.x - 300; if(camera.x < 0) camera.x = 0;
+    if(player.invul > 0) player.invul--;
 }
 
 function draw() {
     ctx.clearRect(0,0,canvas.width,canvas.height);
     ctx.save(); ctx.translate(-Math.floor(camera.x), 0);
-    for(let i=0; i<12; i++) { ctx.fillStyle="rgba(255,255,255,0.7)"; ctx.beginPath(); ctx.arc(i*300, 100+(i%2*50), 40, 0, 7); ctx.fill(); }
-    platforms.forEach(p => { ctx.fillStyle="#ff9a9e"; ctx.fillRect(p.x,p.y,p.w,p.h); ctx.fillStyle="white"; ctx.fillRect(p.x,p.y,p.w,5); });
-    collectibles.forEach(c => { if(!c.collected) drawHeart(c.x, c.y + Math.sin(Date.now()/200)*5, 12, "#ff4d6d"); });
-    villains.forEach(v=>{ if(v.alive){ ctx.fillStyle="#000"; ctx.beginPath(); ctx.arc(v.x+17,v.y+17,17,0,7); ctx.fill(); ctx.fillStyle="white"; ctx.fillRect(v.x+10,v.y+12,4,4); ctx.fillRect(v.x+20,v.y+12,4,4);} });
-    particles.forEach(p => { ctx.fillStyle=p.color; ctx.fillRect(p.x, p.y, 4, 4); });
-    ctx.font="70px Arial"; ctx.fillText("🏰", 3050, 410);
-    if(player.invul%4<2) drawHeart(player.x+15, player.y, 18, "#ff0054");
+    for(let i=0; i<15; i++) { ctx.fillStyle="rgba(255,255,255,0.7)"; ctx.beginPath(); ctx.arc(i*400, 100+(i%2*50), 40, 0, 7); ctx.fill(); }
+    activeLevel.platforms.forEach(p => { ctx.fillStyle="#ff9a9e"; ctx.fillRect(p.x,p.y,p.w,p.h); ctx.fillStyle="white"; ctx.fillRect(p.x,p.y,p.w,5); });
+    activeLevel.movingPlatforms.forEach(mp => { ctx.fillStyle="#ff4d6d"; ctx.fillRect(mp.x,mp.y,mp.w,mp.h); });
+    activeLevel.hearts.forEach(h => { if(!h.collected) drawHeart(h.x, h.y, 12, "#ff4d6d"); });
+    activeLevel.villains.forEach(v => { if(v.alive) { ctx.fillStyle="#000"; ctx.beginPath(); ctx.arc(v.x+17,v.y+17,17,0,7); ctx.fill(); ctx.fillStyle="white"; ctx.fillRect(v.x+10,v.y+12,4,4); ctx.fillRect(v.x+20,v.y+12,4,4);} });
+    bullets.forEach(b => { drawHeart(b.x, b.y, 6, "#ff4d6d"); });
+    particles.forEach(p => { 
+        if(p.type === 'heart') drawHeart(p.x, p.y, p.size * (p.life/40), p.color);
+        else { ctx.fillStyle=p.color; ctx.fillRect(p.x, p.y, 4, 4); }
+    });
+    if (currentLevel === 2 && boss.hp > 0) {
+        ctx.fillStyle = "white"; ctx.beginPath();
+        ctx.arc(boss.x+30, boss.y+40, 30, 0, 7); ctx.arc(boss.x+60, boss.y+20, 40, 0, 7); ctx.arc(boss.x+90, boss.y+40, 30, 0, 7); ctx.fill();
+        ctx.fillStyle = "rgba(0,0,0,0.3)"; ctx.fillRect(boss.x, boss.y - 30, 120, 15);
+        ctx.fillStyle = "#ff4d6d"; ctx.fillRect(boss.x, boss.y - 30, (boss.hp / 5) * 120, 15);
+        boss.lightning.forEach(l => { ctx.fillStyle = "yellow"; ctx.fillRect(l.x, l.y, 12, 35); });
+    }
+    ctx.font="70px Arial"; ctx.fillText(currentLevel === 1 ? "➡️" : "🏰", activeLevel.goalX + 50, 410);
+    if(player.invul % 4 < 2) drawHeart(player.x+15, player.y, 18, cheatActive ? "#ffb703" : "#ff0054");
     ctx.restore();
     ctx.fillStyle="white"; ctx.font="bold 20px Arial";
     ctx.fillText(`Love: ${loveMeter}`, 20, 35);
-    for(let i=0; i<lives; i++) drawHeart(canvas.width-180+(i*25), 30, 7, "red");
+    for(let i=0; i<Math.min(lives, 5); i++) drawHeart(canvas.width-180+(i*25), 30, 7, "red");
 }
 
 function gameLoop() { if(gameActive) { update(); draw(); requestAnimationFrame(gameLoop); } }
 
+function setupBtn(id, key, action) {
+    const el = document.getElementById(id);
+    el.addEventListener('touchstart', (e) => { e.preventDefault(); if(action) action(); else keys[key] = true; }, {passive: false});
+    el.addEventListener('touchend', (e) => { e.preventDefault(); if(!action) keys[key] = false; }, {passive: false});
+}
+
+setupBtn('btn-left', 'ArrowLeft');
+setupBtn('btn-right', 'ArrowRight');
+setupBtn('btn-jump', 'ArrowUp', jump);
+setupBtn('btn-shoot', null, shoot);
+
+window.addEventListener('keydown', e => { 
+    keys[e.code] = true; 
+    if(e.code === 'Space' || e.code === 'ArrowUp') jump();
+    if(e.code === 'KeyS') shoot();
+    if(e.key.toLowerCase() === 'l') cheatActive = !cheatActive;
+});
+window.addEventListener('keyup', e => keys[e.code] = false);
+
 document.getElementById('start-btn').onclick = () => { 
     document.getElementById('start-screen').style.display='none'; 
     document.getElementById('touch-controls').style.display='flex';
-    gameActive=true; 
-    gameLoop(); 
+    gameActive=true; gameLoop(); 
 };
 </script>
 </body>
