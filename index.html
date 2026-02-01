@@ -5,17 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Super Anusha World ❤️</title>
     <style>
-        body { background: #ffafbd; margin: 0; overflow: hidden; font-family: 'Arial', sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; touch-action: none; }
-        #game-wrapper { position: relative; width: 100%; max-width: 800px; height: 450px; border: 6px solid #fff; border-radius: 20px; box-shadow: 0 20px 50px rgba(0,0,0,0.2); overflow: hidden; background: #87CEEB; }
-        canvas { display: block; }
-        #ui-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 10; }
-        .screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(255, 175, 189, 0.9); z-index: 100; text-align: center; pointer-events: auto; }
-        h1 { color: #fff; text-shadow: 2px 2px #ff4d6d; margin: 0 0 20px 0; }
-        button { padding: 15px 40px; font-size: 20px; background: #ff4d6d; color: white; border: none; border-radius: 30px; cursor: pointer; transition: 0.3s; box-shadow: 0 5px #c9184a; }
-        button:active { transform: translateY(4px); box-shadow: 0 1px #c9184a; }
-        .controls-info { margin-top: 15px; font-size: 14px; color: #590d22; }
-        #touch-controls { position: absolute; bottom: 10px; width: 100%; display: flex; justify-content: space-between; padding: 0 20px; box-sizing: border-box; z-index: 50; pointer-events: none; }
-        .t-btn { width: 70px; height: 70px; background: rgba(255,255,255,0.3); border-radius: 50%; pointer-events: auto; display: flex; align-items: center; justify-content: center; font-weight: bold; color: white; border: 2px solid white; -webkit-user-select: none; }
+        /* Force GPU usage to stop lag */
+        * { -webkit-backface-visibility: hidden; -webkit-transform: translateZ(0); }
+        
+        body { background: #ffafbd; margin: 0; overflow: hidden; font-family: 'Arial', sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; touch-action: none; position: fixed; width: 100%; }
+        
+        #game-wrapper { position: relative; width: 100%; max-width: 800px; height: 450px; background: #87CEEB; overflow: hidden; }
+        canvas { display: block; width: 100%; height: 100%; image-rendering: pixelated; }
+        
+        .screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(255, 175, 189, 0.95); z-index: 100; text-align: center; }
+        h1 { color: #fff; text-shadow: 2px 2px #ff4d6d; margin-bottom: 20px; }
+        button { padding: 15px 40px; font-size: 20px; background: #ff4d6d; color: white; border: none; border-radius: 30px; cursor: pointer; box-shadow: 0 5px #c9184a; }
+        
+        #touch-controls { position: absolute; bottom: 20px; width: 100%; display: flex; justify-content: space-between; padding: 0 20px; box-sizing: border-box; z-index: 50; pointer-events: none; }
+        .t-btn { width: 75px; height: 75px; background: rgba(255,255,255,0.4); border-radius: 50%; pointer-events: auto; display: flex; align-items: center; justify-content: center; font-weight: bold; color: white; border: 2px solid white; -webkit-user-select: none; user-select: none; }
     </style>
 </head>
 <body>
@@ -25,21 +28,19 @@
     
     <div id="start-screen" class="screen">
         <h1>Super Anusha World</h1>
-        <button onclick="startGame()">START ADVENTURE</button>
-        <p class="controls-info">Arrows to Move & Jump | Collect the hearts!</p>
+        <button id="start-btn">START ADVENTURE</button>
     </div>
 
     <div id="victory-screen" class="screen" style="display:none;">
         <h1 style="font-size: 40px;">❤️ ANUSHA ❤️</h1>
-        <p style="font-size: 20px; color: white;">You've collected all my love!</p>
         <h2 style="color: #ff4d6d;">Will you be my Valentine?</h2>
         <button onclick="location.reload()">PLAY AGAIN</button>
     </div>
 
     <div id="touch-controls">
-        <div style="display:flex; gap:10px;">
-            <div id="btn-left" class="t-btn">←</div>
-            <div id="btn-right" class="t-btn">→</div>
+        <div style="display:flex; gap:15px;">
+            <div id="btn-left" class="t-btn">◀</div>
+            <div id="btn-right" class="t-btn">▶</div>
         </div>
         <div id="btn-jump" class="t-btn">JUMP</div>
     </div>
@@ -48,56 +49,57 @@
 <script>
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
-const wrapper = document.getElementById('game-wrapper');
-
-// Set dimensions
 canvas.width = 800;
 canvas.height = 450;
 
 let gameActive = false;
 let score = 0;
-const gravity = 0.6;
-const worldWidth = 2000; // The world is now 2.5x wider than the screen
+const gravity = 0.8;
+const worldWidth = 2200;
 
-const player = { x: 100, y: 300, w: 35, h: 35, vx: 0, vy: 0, speed: 5, jumpPower: -15, grounded: false };
+const player = { x: 100, y: 300, w: 35, h: 35, vx: 0, vy: 0, speed: 6, jumpPower: -16, grounded: false };
 const camera = { x: 0 };
 const keys = {};
 
-// Level Design
 const platforms = [
-    { x: 0, y: 400, w: 500, h: 50 },
-    { x: 600, y: 320, w: 200, h: 20 },
-    { x: 900, y: 240, w: 200, h: 20 },
-    { x: 1200, y: 350, w: 300, h: 20 },
-    { x: 1600, y: 250, w: 400, h: 100 },
+    { x: 0, y: 400, w: 600, h: 50 },
+    { x: 700, y: 320, w: 250, h: 20 },
+    { x: 1050, y: 240, w: 250, h: 20 },
+    { x: 1400, y: 350, w: 350, h: 20 },
+    { x: 1850, y: 250, w: 400, h: 100 },
 ];
 
 const hearts = [
-    { x: 650, y: 280, collected: false },
-    { x: 950, y: 200, collected: false },
-    { x: 1350, y: 310, collected: false },
-    { x: 1800, y: 210, collected: false }
+    { x: 750, y: 280, collected: false },
+    { x: 1100, y: 200, collected: false },
+    { x: 1500, y: 310, collected: false },
+    { x: 1950, y: 210, collected: false }
 ];
 
-// Controls
+// Optimized Controls
 window.addEventListener('keydown', e => keys[e.code] = true);
 window.addEventListener('keyup', e => keys[e.code] = false);
 
-// Mobile Touch
 function bindTouch(id, key) {
     const btn = document.getElementById(id);
-    btn.addEventListener('touchstart', (e) => { e.preventDefault(); keys[key] = true; });
-    btn.addEventListener('touchend', () => { keys[key] = false; });
+    btn.addEventListener('touchstart', (e) => { 
+        e.preventDefault(); 
+        keys[key] = true; 
+    }, {passive: false});
+    btn.addEventListener('touchend', (e) => { 
+        e.preventDefault();
+        keys[key] = false; 
+    }, {passive: false});
 }
 bindTouch('btn-left', 'ArrowLeft');
 bindTouch('btn-right', 'ArrowRight');
 bindTouch('btn-jump', 'ArrowUp');
 
-function startGame() {
+document.getElementById('start-btn').addEventListener('click', () => {
     document.getElementById('start-screen').style.display = 'none';
     gameActive = true;
-    requestAnimationFrame(update);
-}
+    gameLoop();
+});
 
 function drawHeart(x, y, size, color) {
     ctx.fillStyle = color;
@@ -113,9 +115,6 @@ function drawHeart(x, y, size, color) {
 }
 
 function update() {
-    if (!gameActive) return;
-
-    // Movement
     if (keys['ArrowLeft']) player.vx = -player.speed;
     else if (keys['ArrowRight']) player.vx = player.speed;
     else player.vx *= 0.8;
@@ -129,7 +128,6 @@ function update() {
     player.x += player.vx;
     player.y += player.vy;
 
-    // Collision
     player.grounded = false;
     platforms.forEach(p => {
         if (player.x + player.w > p.x && player.x < p.x + p.w &&
@@ -140,17 +138,15 @@ function update() {
         }
     });
 
-    // World Bounds
     if (player.x < 0) player.x = 0;
     if (player.x > worldWidth - player.w) player.x = worldWidth - player.w;
-    if (player.y > canvas.height) { player.x = 100; player.y = 300; } // Respawn
+    if (player.y > 600) { player.x = 100; player.y = 300; player.vy = 0; } 
 
-    // Camera
+    // Instant Camera Tracking
     camera.x = player.x - canvas.width / 2;
     if (camera.x < 0) camera.x = 0;
     if (camera.x > worldWidth - canvas.width) camera.x = worldWidth - canvas.width;
 
-    // Collect Hearts
     hearts.forEach(h => {
         if (!h.collected && Math.hypot(player.x - h.x, player.y - h.y) < 40) {
             h.collected = true;
@@ -158,57 +154,53 @@ function update() {
         }
     });
 
-    if (score === hearts.length && player.x > 1800) {
+    if (score === hearts.length && player.x > 1900) {
         gameActive = false;
         document.getElementById('victory-screen').style.display = 'flex';
     }
-
-    draw();
-    requestAnimationFrame(update);
 }
 
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-
     ctx.save();
-    ctx.translate(-camera.x, 0);
+    ctx.translate(-Math.floor(camera.x), 0); // Math.floor prevents jitter
 
-    // Draw Clouds (Static-ish background)
-    ctx.fillStyle = "white";
-    for(let i=0; i<10; i++) {
+    // Background Clouds
+    ctx.fillStyle = "rgba(255,255,255,0.7)";
+    for(let i=0; i<15; i++) {
         ctx.beginPath();
-        ctx.arc(i*300 + 50, 100 + (i%2*30), 40, 0, Math.PI*2);
+        ctx.arc(i*250 + 50, 80 + (i%3*40), 35, 0, Math.PI*2);
         ctx.fill();
     }
 
-    // Draw Platforms
     platforms.forEach(p => {
         ctx.fillStyle = "#ff8fa3";
         ctx.fillRect(p.x, p.y, p.w, p.h);
         ctx.fillStyle = "#fff";
-        ctx.fillRect(p.x, p.y, p.w, 5); // Snow/Topping
+        ctx.fillRect(p.x, p.y, p.w, 4);
     });
 
-    // Draw Hearts
     hearts.forEach(h => {
-        if (!h.collected) drawHeart(h.x, h.y, 15, "#ff4d6d");
+        if (!h.collected) drawHeart(h.x, h.y, 14, "#ff4d6d");
     });
 
-    // Draw Goal Post
     ctx.font = "50px Arial";
-    ctx.fillText("🏁", 1900, 240);
+    ctx.fillText("🏁", 2000, 240);
 
-    // Draw Player
     drawHeart(player.x + 15, player.y, 15, "#c9184a");
-
     ctx.restore();
 
-    // UI
     ctx.fillStyle = "white";
-    ctx.font = "bold 20px Arial";
-    ctx.fillText(`Hearts: ${score} / ${hearts.length}`, 20, 30);
+    ctx.font = "bold 22px Arial";
+    ctx.fillText(`Love Collected: ${score}/${hearts.length}`, 20, 40);
+}
+
+function gameLoop() {
+    if (!gameActive) return;
+    update();
+    draw();
+    requestAnimationFrame(gameLoop);
 }
 </script>
-
 </body>
 </html>
