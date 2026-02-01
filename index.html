@@ -3,157 +3,212 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>For Anusha ❤️</title>
+    <title>Super Anusha World ❤️</title>
     <style>
-        body { background: #fff0f3; display: flex; flex-direction: column; align-items: center; font-family: 'Segoe UI', sans-serif; height: 100vh; margin: 0; justify-content: center; overflow: hidden; touch-action: manipulation; }
-        h1 { color: #ff4d6d; margin: 10px 0; font-size: 24px; }
-        #game-container { position: relative; width: 100vw; max-width: 600px; height: 400px; background: #87CEEB; border: 5px solid #ffb3c1; border-radius: 15px; overflow: hidden; box-shadow: 0 10px 25px rgba(255, 77, 109, 0.3); }
-        canvas { display: block; width: 100%; height: 100%; }
-        
-        #overlay, #victory { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.9); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 100; text-align: center; padding: 20px; box-sizing: border-box; }
-        #victory { display: none; z-index: 200; }
-
-        .controls-hint { font-size: 14px; color: #590d22; margin-top: 5px; }
-        button { padding: 12px 30px; font-size: 18px; background: #ff4d6d; color: white; border: none; border-radius: 50px; cursor: pointer; font-weight: bold; }
-        
-        /* Mobile Touch Zones */
-        .touch-ctrl { position: absolute; bottom: 0; height: 150px; width: 50%; z-index: 50; opacity: 0.2; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; pointer-events: auto; }
-        #left-zone { left: 0; background: linear-gradient(to right, rgba(0,0,0,0.2), transparent); }
-        #right-zone { right: 0; background: linear-gradient(to left, rgba(0,0,0,0.2), transparent); }
-
-        .heart-bounce { animation: heartBeat 1s infinite alternate; color: #ff4d6d; font-size: 60px; }
-        @keyframes heartBeat { from { transform: scale(1); } to { transform: scale(1.2); } }
+        body { background: #ffafbd; margin: 0; overflow: hidden; font-family: 'Arial', sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; touch-action: none; }
+        #game-wrapper { position: relative; width: 100%; max-width: 800px; height: 450px; border: 6px solid #fff; border-radius: 20px; box-shadow: 0 20px 50px rgba(0,0,0,0.2); overflow: hidden; background: #87CEEB; }
+        canvas { display: block; }
+        #ui-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 10; }
+        .screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(255, 175, 189, 0.9); z-index: 100; text-align: center; pointer-events: auto; }
+        h1 { color: #fff; text-shadow: 2px 2px #ff4d6d; margin: 0 0 20px 0; }
+        button { padding: 15px 40px; font-size: 20px; background: #ff4d6d; color: white; border: none; border-radius: 30px; cursor: pointer; transition: 0.3s; box-shadow: 0 5px #c9184a; }
+        button:active { transform: translateY(4px); box-shadow: 0 1px #c9184a; }
+        .controls-info { margin-top: 15px; font-size: 14px; color: #590d22; }
+        #touch-controls { position: absolute; bottom: 10px; width: 100%; display: flex; justify-content: space-between; padding: 0 20px; box-sizing: border-box; z-index: 50; pointer-events: none; }
+        .t-btn { width: 70px; height: 70px; background: rgba(255,255,255,0.3); border-radius: 50%; pointer-events: auto; display: flex; align-items: center; justify-content: center; font-weight: bold; color: white; border: 2px solid white; -webkit-user-select: none; }
     </style>
 </head>
 <body>
 
-    <h1>Super Anusha World</h1>
-
-    <div id="game-container">
-        <div id="overlay">
-            <h2 style="color: #c9184a;">A Quest for Anusha</h2>
-            <button id="start-btn">START GAME</button>
-            <p class="controls-hint">Desktop: Arrows to Move<br>Mobile: Tap Left/Right sides to Move & Jump</p>
-        </div>
-
-        <div id="left-zone" class="touch-ctrl">MOVE</div>
-        <div id="right-zone" class="touch-ctrl">JUMP</div>
-
-        <canvas id="gameCanvas" width="600" height="400"></canvas>
-
-        <div id="victory">
-            <div class="heart-bounce">❤️</div>
-            <h2 style="color: #c9184a;">Anusha!</h2>
-            <p style="font-size: 18px;">You won my heart.</p>
-            <h1 style="color: #ff4d6d; font-size: 28px;">Will you be my Valentine?</h1>
-            <button onclick="location.reload()">Play Again</button>
-        </div>
+<div id="game-wrapper">
+    <canvas id="gameCanvas"></canvas>
+    
+    <div id="start-screen" class="screen">
+        <h1>Super Anusha World</h1>
+        <button onclick="startGame()">START ADVENTURE</button>
+        <p class="controls-info">Arrows to Move & Jump | Collect the hearts!</p>
     </div>
 
-    <script>
-        const canvas = document.getElementById('gameCanvas');
-        const ctx = canvas.getContext('2d');
-        const startBtn = document.getElementById('start-btn');
-        const overlay = document.getElementById('overlay');
-        const victory = document.getElementById('victory');
-        const leftZone = document.getElementById('left-zone');
-        const rightZone = document.getElementById('right-zone');
+    <div id="victory-screen" class="screen" style="display:none;">
+        <h1 style="font-size: 40px;">❤️ ANUSHA ❤️</h1>
+        <p style="font-size: 20px; color: white;">You've collected all my love!</p>
+        <h2 style="color: #ff4d6d;">Will you be my Valentine?</h2>
+        <button onclick="location.reload()">PLAY AGAIN</button>
+    </div>
 
-        let player = { x: 50, y: 300, w: 30, h: 30, dy: 0, speed: 5, jump: 12, grounded: false };
-        const gravity = 0.6;
-        const keys = {};
-        const platforms = [
-            { x: 0, y: 370, w: 600, h: 30 }, 
-            { x: 180, y: 270, w: 120, h: 10 },
-            { x: 380, y: 180, w: 120, h: 10 }
-        ];
-        const goal = { x: 450, y: 140, w: 40, h: 40 };
-        let particles = [];
-        let gameRunning = false;
+    <div id="touch-controls">
+        <div style="display:flex; gap:10px;">
+            <div id="btn-left" class="t-btn">←</div>
+            <div id="btn-right" class="t-btn">→</div>
+        </div>
+        <div id="btn-jump" class="t-btn">JUMP</div>
+    </div>
+</div>
 
-        // Desktop Controls
-        window.addEventListener('keydown', e => keys[e.code] = true);
-        window.addEventListener('keyup', e => keys[e.code] = false);
+<script>
+const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d');
+const wrapper = document.getElementById('game-wrapper');
 
-        // Mobile Controls
-        leftZone.addEventListener('touchstart', (e) => { e.preventDefault(); keys['ArrowLeft'] = true; });
-        leftZone.addEventListener('touchend', () => { keys['ArrowLeft'] = false; });
-        rightZone.addEventListener('touchstart', (e) => { 
-            e.preventDefault(); 
-            if (player.grounded) { player.dy = -player.jump; player.grounded = false; }
-            keys['ArrowRight'] = true; 
-        });
-        rightZone.addEventListener('touchend', () => { keys['ArrowRight'] = false; });
+// Set dimensions
+canvas.width = 800;
+canvas.height = 450;
 
-        startBtn.onclick = () => { overlay.style.display = 'none'; gameRunning = true; gameLoop(); };
+let gameActive = false;
+let score = 0;
+const gravity = 0.6;
+const worldWidth = 2000; // The world is now 2.5x wider than the screen
 
-        function drawHeart(x, y, w, h) {
-            ctx.fillStyle = "#ff4d6d";
-            ctx.beginPath();
-            ctx.moveTo(x + w / 2, y + h);
-            ctx.bezierCurveTo(x, y + h - h*0.3, x, y, x + w / 2, y + h*0.3);
-            ctx.bezierCurveTo(x + w, y, x + w, y + h - h*0.3, x + w / 2, y + h);
-            ctx.fill();
+const player = { x: 100, y: 300, w: 35, h: 35, vx: 0, vy: 0, speed: 5, jumpPower: -15, grounded: false };
+const camera = { x: 0 };
+const keys = {};
+
+// Level Design
+const platforms = [
+    { x: 0, y: 400, w: 500, h: 50 },
+    { x: 600, y: 320, w: 200, h: 20 },
+    { x: 900, y: 240, w: 200, h: 20 },
+    { x: 1200, y: 350, w: 300, h: 20 },
+    { x: 1600, y: 250, w: 400, h: 100 },
+];
+
+const hearts = [
+    { x: 650, y: 280, collected: false },
+    { x: 950, y: 200, collected: false },
+    { x: 1350, y: 310, collected: false },
+    { x: 1800, y: 210, collected: false }
+];
+
+// Controls
+window.addEventListener('keydown', e => keys[e.code] = true);
+window.addEventListener('keyup', e => keys[e.code] = false);
+
+// Mobile Touch
+function bindTouch(id, key) {
+    const btn = document.getElementById(id);
+    btn.addEventListener('touchstart', (e) => { e.preventDefault(); keys[key] = true; });
+    btn.addEventListener('touchend', () => { keys[key] = false; });
+}
+bindTouch('btn-left', 'ArrowLeft');
+bindTouch('btn-right', 'ArrowRight');
+bindTouch('btn-jump', 'ArrowUp');
+
+function startGame() {
+    document.getElementById('start-screen').style.display = 'none';
+    gameActive = true;
+    requestAnimationFrame(update);
+}
+
+function drawHeart(x, y, size, color) {
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    ctx.moveTo(x, y + size/4);
+    ctx.quadraticCurveTo(x, y, x - size/2, y);
+    ctx.quadraticCurveTo(x - size, y, x - size, y + size/2);
+    ctx.quadraticCurveTo(x - size, y + size, x, y + size * 1.5);
+    ctx.quadraticCurveTo(x + size, y + size, x + size, y + size/2);
+    ctx.quadraticCurveTo(x + size, y, x + size/2, y);
+    ctx.quadraticCurveTo(x, y, x, y + size/4);
+    ctx.fill();
+}
+
+function update() {
+    if (!gameActive) return;
+
+    // Movement
+    if (keys['ArrowLeft']) player.vx = -player.speed;
+    else if (keys['ArrowRight']) player.vx = player.speed;
+    else player.vx *= 0.8;
+
+    if (keys['ArrowUp'] && player.grounded) {
+        player.vy = player.jumpPower;
+        player.grounded = false;
+    }
+
+    player.vy += gravity;
+    player.x += player.vx;
+    player.y += player.vy;
+
+    // Collision
+    player.grounded = false;
+    platforms.forEach(p => {
+        if (player.x + player.w > p.x && player.x < p.x + p.w &&
+            player.y + player.h > p.y && player.y + player.h < p.y + p.h && player.vy >= 0) {
+            player.y = p.y - player.h;
+            player.vy = 0;
+            player.grounded = true;
         }
+    });
 
-        function createConfetti() {
-            for(let i=0; i<80; i++) {
-                particles.push({ x: Math.random()*600, y: Math.random()*400-400, r: Math.random()*4+2, color: `hsl(${Math.random()*360},100%,50%)`, tilt: Math.random()*10 });
-            }
+    // World Bounds
+    if (player.x < 0) player.x = 0;
+    if (player.x > worldWidth - player.w) player.x = worldWidth - player.w;
+    if (player.y > canvas.height) { player.x = 100; player.y = 300; } // Respawn
+
+    // Camera
+    camera.x = player.x - canvas.width / 2;
+    if (camera.x < 0) camera.x = 0;
+    if (camera.x > worldWidth - canvas.width) camera.x = worldWidth - canvas.width;
+
+    // Collect Hearts
+    hearts.forEach(h => {
+        if (!h.collected && Math.hypot(player.x - h.x, player.y - h.y) < 40) {
+            h.collected = true;
+            score++;
         }
+    });
 
-        function update() {
-            if (keys['ArrowRight']) player.x += player.speed;
-            if (keys['ArrowLeft']) player.x -= player.speed;
-            if ((keys['ArrowUp'] || keys['Space']) && player.grounded) {
-                player.dy = -player.jump;
-                player.grounded = false;
-            }
+    if (score === hearts.length && player.x > 1800) {
+        gameActive = false;
+        document.getElementById('victory-screen').style.display = 'flex';
+    }
 
-            player.dy += gravity;
-            player.y += player.dy;
-            player.grounded = false;
+    draw();
+    requestAnimationFrame(update);
+}
 
-            platforms.forEach(p => {
-                if (player.x < p.x + p.w && player.x + player.w > p.x &&
-                    player.y < p.y + p.h && player.y + player.h > p.y && player.dy >= 0) {
-                    player.y = p.y - player.h;
-                    player.dy = 0;
-                    player.grounded = true;
-                }
-            });
+function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            if (player.x < 0) player.x = 0;
-            if (player.x > 570) player.x = 570;
+    ctx.save();
+    ctx.translate(-camera.x, 0);
 
-            if (player.x < goal.x + goal.w && player.x + player.w > goal.x &&
-                player.y < goal.y + goal.h && player.y + player.h > goal.y) {
-                victory.style.display = 'flex';
-                createConfetti();
-                gameRunning = false;
-            }
-        }
+    // Draw Clouds (Static-ish background)
+    ctx.fillStyle = "white";
+    for(let i=0; i<10; i++) {
+        ctx.beginPath();
+        ctx.arc(i*300 + 50, 100 + (i%2*30), 40, 0, Math.PI*2);
+        ctx.fill();
+    }
 
-        function draw() {
-            ctx.clearRect(0, 0, 600, 400);
-            ctx.font = "30px Arial";
-            ctx.fillText("🏆", goal.x, goal.y + 30);
-            platforms.forEach(p => {
-                ctx.fillStyle = "#8B4513"; ctx.fillRect(p.x, p.y, p.w, p.h);
-                ctx.fillStyle = "#228B22"; ctx.fillRect(p.x, p.y, p.w, 5);
-            });
-            drawHeart(player.x, player.y, player.w, player.h);
-            particles.forEach(p => {
-                ctx.fillStyle = p.color; ctx.fillRect(p.x, p.y, p.r, p.r);
-                p.y += 3; p.x += Math.sin(p.y/10);
-            });
-        }
+    // Draw Platforms
+    platforms.forEach(p => {
+        ctx.fillStyle = "#ff8fa3";
+        ctx.fillRect(p.x, p.y, p.w, p.h);
+        ctx.fillStyle = "#fff";
+        ctx.fillRect(p.x, p.y, p.w, 5); // Snow/Topping
+    });
 
-        function gameLoop() {
-            update();
-            draw();
-            if(gameRunning || victory.style.display === 'flex') requestAnimationFrame(gameLoop);
-        }
-    </script>
+    // Draw Hearts
+    hearts.forEach(h => {
+        if (!h.collected) drawHeart(h.x, h.y, 15, "#ff4d6d");
+    });
+
+    // Draw Goal Post
+    ctx.font = "50px Arial";
+    ctx.fillText("🏁", 1900, 240);
+
+    // Draw Player
+    drawHeart(player.x + 15, player.y, 15, "#c9184a");
+
+    ctx.restore();
+
+    // UI
+    ctx.fillStyle = "white";
+    ctx.font = "bold 20px Arial";
+    ctx.fillText(`Hearts: ${score} / ${hearts.length}`, 20, 30);
+}
+</script>
+
 </body>
 </html>
