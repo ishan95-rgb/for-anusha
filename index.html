@@ -10,40 +10,44 @@
         #game-wrapper { position: relative; width: 100%; height: 100%; max-width: 900px; max-height: 500px; background: linear-gradient(to bottom, #87CEEB, #E0F6FF); overflow: hidden; border: 4px solid white; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
         canvas { display: block; width: 100%; height: 100%; object-fit: contain; }
         .screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(255, 175, 189, 0.95); z-index: 1000; text-align: center; backdrop-filter: blur(8px); padding: 20px; box-sizing: border-box; }
-        h1 { color: white; text-shadow: 2px 2px 0px #ff4d6d; font-size: clamp(24px, 8vw, 38px); margin: 10px; }
-        button { padding: 15px 40px; font-size: 18px; background: #ff4d6d; color: white; border: none; border-radius: 50px; cursor: pointer; font-weight: bold; box-shadow: 0 4px #c9184a; }
+        h1 { color: white; text-shadow: 2px 2px 0px #ff4d6d; font-size: clamp(24px, 8vw, 38px); margin: 5px; }
+        button { padding: 12px 35px; font-size: 18px; background: #ff4d6d; color: white; border: none; border-radius: 50px; cursor: pointer; font-weight: bold; box-shadow: 0 4px #c9184a; margin-top: 10px; }
         #touch-controls { position: absolute; bottom: 20px; width: 100%; display: flex; justify-content: space-between; padding: 0 25px; box-sizing: border-box; z-index: 200; pointer-events: none; }
         .ctrl-group { display: flex; gap: 15px; pointer-events: none; }
         .t-btn { width: clamp(60px, 14vw, 80px); height: clamp(60px, 14vw, 80px); background: rgba(255,255,255,0.4); border-radius: 50%; pointer-events: auto; display: flex; align-items: center; justify-content: center; font-size: 28px; color: white; border: 3px solid white; }
         #btn-shoot { background: rgba(255, 77, 109, 0.6); }
         .t-btn:active { background: #ff4d6d; transform: scale(0.9); }
-        #level-up { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #ff4d6d; font-size: 50px; font-weight: bold; text-shadow: 2px 2px white; display: none; z-index: 500; pointer-events: none; }
+        #ui-notif { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #ff4d6d; font-size: 50px; font-weight: bold; text-shadow: 2px 2px white; display: none; z-index: 500; pointer-events: none; text-align: center; }
+        .stat-box { background: white; color: #ff4d6d; padding: 15px; border-radius: 15px; max-width: 90%; margin: 10px 0; border: 2px solid #ff4d6d; }
     </style>
 </head>
 <body>
 
 <div id="game-wrapper">
     <canvas id="gameCanvas"></canvas>
-    <div id="level-up">LEVEL UP! 💖</div>
+    <div id="ui-notif">LEVEL UP! 💖</div>
     
     <div id="start-screen" class="screen">
         <h1>Anusha's Quest ❤️</h1>
-        <p style="color: white; font-weight: bold; margin-bottom: 20px;">Reach the Castle to win!</p>
+        <p style="color: white; font-weight: bold; margin-bottom: 20px;">Can you find the secret message?</p>
         <button id="start-btn">PLAY NOW</button>
     </div>
 
     <div id="game-over-screen" class="screen" style="display:none; background: rgba(0,0,0,0.9);">
-        <h1 style="color: #ff4d6d;">💔 Almost There!</h1>
+        <h1 style="color: #ff4d6d;">💔 Don't Give Up!</h1>
         <button onclick="location.reload()">RETRY</button>
     </div>
 
     <div id="gift-screen" class="screen" style="display:none;">
-        <h1>Valentine Unlocked! 🎁</h1>
-        <div style="background: white; color: #ff4d6d; padding: 20px; border-radius: 15px; max-width: 90%;">
-            <p>You made it, Anusha!</p>
-            <p id="final-msg" style="font-style: italic; font-weight: bold;">I love you more than everything!</p>
+        <h1 id="win-title">Quest Complete! 🎁</h1>
+        <div class="stat-box">
+            <div id="final-stats" style="font-weight: bold; margin-bottom: 10px; font-size: 18px;"></div>
+            <p id="final-msg" style="font-style: italic; font-weight: bold; font-size: 19px;"></p>
+            <p id="secret-hint" style="color: #ff758c; font-size: 14px; margin-top: 10px; font-weight: bold; display: none;">
+                Psst... there's a secret message if you collect all 6 hearts! 🤫
+            </p>
         </div>
-        <button onclick="location.reload()" style="margin-top: 15px;">PLAY AGAIN</button>
+        <button onclick="location.reload()">PLAY AGAIN</button>
     </div>
 
     <div id="touch-controls" style="display: none;">
@@ -102,13 +106,13 @@ function shoot() {
 }
 
 function spawnParticles(x, y, color, type = 'square') {
-    for(let i=0; i<10; i++) {
+    for(let i=0; i<12; i++) {
         particles.push({
             x: x, y: y, 
             vx: (Math.random() - 0.5) * 8, 
             vy: (Math.random() - 0.5) * 8 - 2,
             life: 40, color: color, type: type,
-            size: Math.random() * 5 + 5
+            size: Math.random() * 5 + 6
         });
     }
 }
@@ -121,11 +125,33 @@ function drawHeart(x, y, s, c) {
     ctx.quadraticCurveTo(x, y, x, y + s/4); ctx.fill();
 }
 
+function flashNotif(text) {
+    const el = document.getElementById('ui-notif');
+    el.innerText = text;
+    el.style.display = 'block';
+    setTimeout(() => el.style.display = 'none', 1500);
+}
+
 function showWinScreen() {
     gameActive = false;
-    spawnParticles(player.x + 20, player.y, "gold", "heart");
-    spawnParticles(player.x + 20, player.y, "red", "heart");
-    if(loveMeter >= 6) document.getElementById('final-msg').innerText = "Perfect Score! You're my whole world! ❤️";
+    const finalMsg = document.getElementById('final-msg');
+    const winTitle = document.getElementById('win-title');
+    const finalStats = document.getElementById('final-stats');
+    const secretHint = document.getElementById('secret-hint');
+    
+    finalStats.innerHTML = `💖 Hearts Collected: ${loveMeter}/6 | ❤️ Lives Left: ${lives}`;
+    
+    if(loveMeter >= 6) {
+        winTitle.innerText = "🏆 PERFECT QUEST! 🏆";
+        finalMsg.innerText = "You found every bit of my love! You are my forever Valentine! 💍❤️";
+        secretHint.style.display = "none";
+        spawnParticles(player.x + 20, player.y, "gold", "heart");
+    } else {
+        winTitle.innerText = "Quest Complete! 🎁";
+        finalMsg.innerText = "I love you more than everything!";
+        secretHint.style.display = "block";
+    }
+    
     document.getElementById('gift-screen').style.display = 'flex';
     document.getElementById('touch-controls').style.display = 'none';
 }
@@ -167,7 +193,6 @@ function update() {
     if (wasGrounded && !player.grounded) player.coyoteTime = 12;
     if (player.coyoteTime > 0) player.coyoteTime--;
 
-    // Bullet Logic
     for(let i = bullets.length - 1; i >= 0; i--) {
         let b = bullets[i]; b.x += b.vx; b.life--;
         if(currentLevel === 2 && boss.hp > 0 && b.x > boss.x && b.x < boss.x + boss.w && b.y > boss.y && b.y < boss.y + boss.h) {
@@ -207,10 +232,14 @@ function update() {
         });
     }
 
-    if(lives <= 0) { gameActive = false; document.getElementById('game-over-screen').style.display='flex'; document.getElementById('touch-controls').style.display='none';}
+    if(lives <= 0) { gameActive = false; document.getElementById('game-over-screen').style.display='flex'; document.getElementById('touch-controls').style.display='none'; }
 
     activeLevel.hearts.forEach(h => {
-        if(!h.collected && Math.hypot(player.x - h.x, player.y - h.y) < 45) { h.collected = true; loveMeter++; spawnParticles(h.x, h.y, "#ff4d6d", "heart"); }
+        if(!h.collected && Math.hypot(player.x - h.x, player.y - h.y) < 45) { 
+            h.collected = true; loveMeter++; 
+            spawnParticles(h.x, h.y, "#ff4d6d", "heart");
+            if(loveMeter === 6) flashNotif("PERFECT! 💖");
+        }
     });
 
     for(let i=particles.length-1; i>=0; i--) {
@@ -218,17 +247,12 @@ function update() {
         if(p.life <= 0) particles.splice(i, 1);
     }
 
-    // LEVEL END & WIN LOGIC
     if(player.x > activeLevel.goalX) {
         if(currentLevel === 1) { 
             currentLevel = 2; activeLevel = levels[2]; 
             player.x = 100; player.y = 300; 
-            const lu = document.getElementById('level-up');
-            lu.style.display = 'block';
-            setTimeout(() => lu.style.display = 'none', 1500);
-        } else {
-            showWinScreen(); // End game at castle
-        }
+            flashNotif("LEVEL UP! 💖");
+        } else { showWinScreen(); }
     }
 
     if(player.y > 600) { 
@@ -265,7 +289,7 @@ function draw() {
     if(player.invul % 4 < 2) drawHeart(player.x+15, player.y, 18, cheatActive ? "#ffb703" : "#ff0054");
     ctx.restore();
     ctx.fillStyle="white"; ctx.font="bold 20px Arial";
-    ctx.fillText(`Love: ${loveMeter}`, 20, 35);
+    ctx.fillText(`Hearts: ${loveMeter}/6`, 20, 35);
     for(let i=0; i<Math.min(lives, 5); i++) drawHeart(canvas.width-180+(i*25), 30, 7, "red");
 }
 
